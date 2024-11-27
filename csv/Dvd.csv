@@ -1,0 +1,12 @@
+DvdId,Title,Year,Cost,CategoryId,RentedOut,Rating,ActionOnReturn
+1,Elizabeth: The Golden Age,2018,5.29,5,Y,PG,Return to Shelf
+2,The Bourne Ultimatum,2006,3.99,1,N,PG,Sell
+3,Shrek 2,2004,3.99,3,N,3,Return to Shelf
+4,Ace Ventura, Pet Detective,2004,3.99,4,N,14A,Sell
+5,Hairspray,2017,5.29,7,N,PG,Sell
+6,A Charlie Brown Christmas,2000,3.99,3,N,G,Return to Shelf
+7,Leonard Cohen: I'm Your Man,2022,3.99,2,Y,PG,Return to Shelf
+8,Nightmare on Elm Street,1999,3.99,6,Y,R,Return to Shelf
+9,Star Trek: Nemesis,2005,3.99,8,Y,PG,Return to Shelf
+10,The King's Speech,2020,5.29,5,Y,R,Return to Shelf
+11,True Grit,2020,5.29,1,Y,PG,Return to Shelf
