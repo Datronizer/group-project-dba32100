@@ -159,35 +159,35 @@ END;
 ----
 
 -- testing the show customer movie rentals and subtotal procedures:
-SET SERVEROUTPUT ON;
-BEGIN
-    ShowCustomerMovieRentals;
-END;
+--SET SERVEROUTPUT ON;
+--BEGIN
+--    ShowCustomerMovieRentals;
+--END;
 --
-SET SERVEROUTPUT ON;
-BEGIN
-    ShowSubtotals;
-END;
+--SET SERVEROUTPUT ON;
+--BEGIN
+--    ShowSubtotals;
+--END;
 
 --
 --
 -- testing the dvd cost difference function:
-SET SERVEROUTPUT ON;
-DECLARE
-    dvd_rec SYS_REFCURSOR;
-    dvd_title Dvd.DvdTitle%TYPE;
-    dvd_cost Dvd.DvdCost%TYPE;
-    dvd_year Dvd.DvdYear%TYPE;
-    cost_difference NUMBER;
-BEGIN
-    dvd_rec := DvdCostDifference;
-    LOOP
-        FETCH dvd_rec INTO dvd_title, dvd_cost, dvd_year, cost_difference;
-        EXIT WHEN dvd_rec%NOTFOUND;
-        DBMS_OUTPUT.PUT_LINE('Title: ' || dvd_title || ', Year: ' || dvd_year || ', Cost: ' || dvd_cost || ', Difference: ' || cost_difference);
-    END LOOP;
-    CLOSE dvd_rec;
-END;
+--SET SERVEROUTPUT ON;
+--DECLARE
+--    dvd_rec SYS_REFCURSOR;
+--    dvd_title Dvd.DvdTitle%TYPE;
+--    dvd_cost Dvd.DvdCost%TYPE;
+--    dvd_year Dvd.DvdYear%TYPE;
+--    cost_difference NUMBER;
+--BEGIN
+--    dvd_rec := DvdCostDifference;
+--    LOOP
+--        FETCH dvd_rec INTO dvd_title, dvd_cost, dvd_year, cost_difference;
+--        EXIT WHEN dvd_rec%NOTFOUND;
+--        DBMS_OUTPUT.PUT_LINE('Title: ' || dvd_title || ', Year: ' || dvd_year || ', Cost: ' || dvd_cost || ', Difference: ' || cost_difference);
+--    END LOOP;
+--    CLOSE dvd_rec;
+--END;
 
 --
 --
