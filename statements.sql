@@ -1,4 +1,4 @@
--- IInsert data
+-- Insert data
 CREATE OR REPLACE PROCEDURE InsertCustomer (
     p_CustomerId IN Customer.CustomerId%TYPE,
     p_CustomerInitials IN Customer.CustomerInitials%TYPE,
@@ -42,7 +42,7 @@ END;
 --Task a: Show the customer name and DVD name along with rental cost in a list starting 
 --from the least renting cost to the highest renting cost using analytical functions.
 SELECT 
-    c.FirstName || 'Elizabeth' || c.LastName AS CustomerName,
+    c.FirstName || ' ' || c.LastName AS CustomerName,
     d.DvdTitle,
     d.DvdCost,
     RANK() OVER (ORDER BY d.DvdCost ASC) AS CostRank
@@ -75,9 +75,11 @@ WHERE
 --Task 1: Show the names of the customers, movie name, and the number of 
 --movies rented by them. Make sure to show subtotals as per customer 
 --(number of movies rented) and subtotal for each movie showing how many times that movie was rented.
+
+
+--part one, showing the movie rentals:
 CREATE OR REPLACE PROCEDURE ShowCustomerMovieRentals AS
 BEGIN
-    -- Show the names of the customers, movie name, and the number of movies rented by them
     DBMS_OUTPUT.PUT_LINE('Customer Name | Movie Name | Number of Rentals');
     FOR rec IN (
         SELECT 
@@ -97,7 +99,11 @@ BEGIN
     ) LOOP
         DBMS_OUTPUT.PUT_LINE(rec.CustomerName || ' | ' || rec.DvdTitle || ' | ' || rec.NumberOfRentals);
     END LOOP;
+END;
 
+-- part two showing the subtotal:
+CREATE OR REPLACE PROCEDURE ShowSubtotals AS
+BEGIN
     -- Show subtotals per customer
     DBMS_OUTPUT.PUT_LINE('Customer Name | Total Rentals');
     FOR rec IN (
@@ -134,7 +140,6 @@ BEGIN
         DBMS_OUTPUT.PUT_LINE(rec.DvdTitle || ' | ' || rec.TotalRentals);
     END LOOP;
 END;
----
 
 ----Task 2: What is the difference between DVD cost and the average cost of all the DVDs of each year.
 CREATE OR REPLACE FUNCTION DvdCostDifference
@@ -153,47 +158,54 @@ BEGIN
 END;
 ----
 
--- testing the show customer movie rentals procedure:
---BEGIN
---    ShowCustomerMovieRentals;
---END;
+-- testing the show customer movie rentals and subtotal procedures:
+SET SERVEROUTPUT ON;
+BEGIN
+    ShowCustomerMovieRentals;
+END;
+--
+SET SERVEROUTPUT ON;
+BEGIN
+    ShowSubtotals;
+END;
 
 --
 --
 -- testing the dvd cost difference function:
---SET SERVEROUTPUT ON;
---DECLARE
---    dvd_rec SYS_REFCURSOR;
---    dvd_title Dvd.DvdTitle%TYPE;
---    dvd_cost Dvd.DvdCost%TYPE;
---    dvd_year Dvd.DvdYear%TYPE;
---    cost_difference NUMBER;
---BEGIN
---    dvd_rec := DvdCostDifference;
---    LOOP
---        FETCH dvd_rec INTO dvd_title, dvd_cost, dvd_year, cost_difference;
---        EXIT WHEN dvd_rec%NOTFOUND;
---        DBMS_OUTPUT.PUT_LINE('Title: ' || dvd_title || ', Year: ' || dvd_year || ', Cost: ' || dvd_cost || ', Difference: ' || cost_difference);
---    END LOOP;
---    CLOSE dvd_rec;
---END;
+SET SERVEROUTPUT ON;
+DECLARE
+    dvd_rec SYS_REFCURSOR;
+    dvd_title Dvd.DvdTitle%TYPE;
+    dvd_cost Dvd.DvdCost%TYPE;
+    dvd_year Dvd.DvdYear%TYPE;
+    cost_difference NUMBER;
+BEGIN
+    dvd_rec := DvdCostDifference;
+    LOOP
+        FETCH dvd_rec INTO dvd_title, dvd_cost, dvd_year, cost_difference;
+        EXIT WHEN dvd_rec%NOTFOUND;
+        DBMS_OUTPUT.PUT_LINE('Title: ' || dvd_title || ', Year: ' || dvd_year || ', Cost: ' || dvd_cost || ', Difference: ' || cost_difference);
+    END LOOP;
+    CLOSE dvd_rec;
+END;
 
 --
 --
 --
 -- testing for the insert:
 --DECLARE
---    v_CustomerId Customer.CustomerId%TYPE := &CustomerId;
+--    v_CustomerId Customer.CustomerId%TYPE := '&CustomerId';
 --    v_CustomerInitials Customer.CustomerInitials%TYPE := '&CustomerInitials';
 --    v_FirstName Customer.FirstName%TYPE := '&FirstName';
 --    v_LastName Customer.LastName%TYPE := '&LastName';
 --    v_PhoneNumber Customer.PhoneNumber%TYPE := '&PhoneNumber';
 --    v_Birthdate Customer.Birthdate%TYPE := TO_DATE('&Birthdate', 'MM/DD/YYYY');
 --    v_DriverLicenseNumber Customer.DriverLicenseNumber%TYPE := '&DriverLicenseNumber';
---    v_Status Customer.Status%TYPE := '&Status';
+--   v_Status Customer.Status%TYPE := '&Status';
 --BEGIN
---    InsertCustomer(v_CustomerId, v_CustomerInitials, v_FirstName, v_LastName, v_PhoneNumber, v_Birthdate, v_DriverLicenseNumber, v_Status);
---END;
+--   InsertCustomer(v_CustomerId, v_CustomerInitials, v_FirstName, v_LastName, v_PhoneNumber, v_Birthdate, v_DriverLicenseNumber, v_Status);
+--END; --side note. status has to be with a first capital letter or it wont work since status is an Enum lmao 
+--SELECT * FROM Customer
 ---
 --
 --
@@ -207,7 +219,7 @@ END;
 --END;
 --
 --
---- testomg for the delete:
+--- testing for the delete:
 --DECLARE
 --    v_CustomerId Customer.CustomerId%TYPE := &CustomerId;
 --BEGIN
