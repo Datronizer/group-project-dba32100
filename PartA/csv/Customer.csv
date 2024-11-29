@@ -1,0 +1,8 @@
+CustomerId,CustomerInitials,FirstName,LastName,PhoneNumber,Birthdate,DriverLicenseNumber,Status
+1,EV,Edward,Vongsaphay,(905) 555-8932,01/01/1990,537597397,Active
+2,FE,Fiona,Esposito,(905) 345-3920,03/28/1955,232323290,Active
+3,GS,Graeme,Sands,(416) 849-5391,11/30/1973,492830981,Amount Owing
+4,MA,Margeret,Armstrong,(905) 745-7342,06/19/1968,987654336,Suspended
+5,MM,Michael,McGuinty,(905) 648-3246,03/30/1984,345678998,Active
+6,PC,Phil,Charest,(416) 371-3979,12/10/1980,604604047,Suspended
+7,PC,Paula,Chow,(416) 635-5555,12/10/1979,000123000,Inactive

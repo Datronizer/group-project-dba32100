@@ -1,3 +1,20 @@
+SET SERVEROUTPUT ON;
+---- BEFORE ANY PART BEGINS ----
+/*
+    Since our accounts are not allowed to create new users. We will now assume
+    that Leader1, 2, and 3 are placeholders for our respective DB usernames.
+    
+    Thus henceforth, the usernames are as follows:
+    - Leader1: S16_TRUONCHI
+    - Leader2: S16_ESGUERCA
+    - Leader3: S16_NGUYE617
+    
+    Now we begin.
+*/
+
+---- PART A ----
+-- TABLE CREATION done by S16_TRUONCHI --
+
 -- Create the enums first
 CREATE TABLE DvdRating (
     Rating VARCHAR2(5) PRIMARY KEY  --('PG', 'G', 'R', '14A', '3')
@@ -17,7 +34,7 @@ CREATE TABLE Category (
 CREATE TABLE Dvd (
     DvdId INT PRIMARY KEY,
     DvdTitle VARCHAR2(50) NOT NULL,
-    DvdYear DATE NOT NULL,
+    DvdYear NUMBER NOT NULL,  -- if it's just the year then DATE is redundant
     DvdCost FLOAT NOT NULL,
     
     CategoryId INT,
@@ -52,80 +69,275 @@ CREATE TABLE Rental (
     FOREIGN KEY (DvdId) REFERENCES Dvd(DvdId)
 );
 
-/* Now we proceed to INSERT data into these tables */
-/* Starting with the enums */
-INSERT ALL
-    INTO DvdRating (Rating) VALUES ('3')
-    INTO DvdRating (Rating) VALUES ('PG')
-    INTO DvdRating (Rating) VALUES ('14A')
-    INTO DvdRating (Rating) VALUES ('G')
-    INTO DvdRating (Rating) VALUES ('R')
-SELECT * FROM dual;
+/* 
+    WARNING 
+    Please run the Talend job to import data from provided CSV files first
+    If you don't run the job, the rest of this will literally not work, as 
+    intended by the Project Guidelines.
+    
+    The Talend testing portion will be commented out to ensure "Run all" works
+    smoothly.
+*/
 
-INSERT ALL
-    INTO CustomerStatus (StatusEnum) VALUES ('Active')
-    INTO CustomerStatus (StatusEnum) VALUES ('Amount Owing')
-    INTO CustomerStatus (StatusEnum) VALUES ('Suspended')
-    INTO CustomerStatus (StatusEnum) VALUES ('Inactive')
-SELECT * FROM dual;
-
-INSERT ALL
-    INTO DvdActionOnReturn (ActionOnReturnEnum) VALUES ('Return to Shelf')
-    INTO DvdActionOnReturn (ActionOnReturnEnum) VALUES ('Sell')
-SELECT * FROM dual;
-
-
-/* Now the rest */
-INSERT ALL
-    INTO Category (CategoryId, CatergoryName) VALUES (1, 'Action/Adventure')
-    INTO Category (CategoryId, CatergoryName) VALUES (2, 'Biography')
-    INTO Category (CategoryId, CatergoryName) VALUES (3, 'Children')
-    INTO Category (CategoryId, CatergoryName) VALUES (4, 'Comedy')
-    INTO Category (CategoryId, CatergoryName) VALUES (5, 'Drama')
-    INTO Category (CategoryId, CatergoryName) VALUES (6, 'Horror')
-    INTO Category (CategoryId, CatergoryName) VALUES (7, 'Musical')
-    INTO Category (CategoryId, CatergoryName) VALUES (8, 'Science Fiction')
-SELECT * FROM dual;
-
-INSERT ALL
-    INTO Customer (CustomerId, CustomerInitials, FirstName, LastName, PhoneNumber, Birthdate, DriverLicenseNumber, Status) VALUES (1, 'EV', 'Edward', 'Vongsaphay', '(905) 555-8932', TO_DATE('01/01/1990', 'MM/DD/YYYY'), '537597397', 'Active')
-    INTO Customer (CustomerId, CustomerInitials, FirstName, LastName, PhoneNumber, Birthdate, DriverLicenseNumber, Status) VALUES (2, 'FE', 'Fiona', 'Esposito', '(905) 345-3920', TO_DATE('03/28/1955', 'MM/DD/YYYY'), '232323290', 'Active')
-    INTO Customer (CustomerId, CustomerInitials, FirstName, LastName, PhoneNumber, Birthdate, DriverLicenseNumber, Status) VALUES (3, 'GS', 'Graeme', 'Sands', '(416) 849-5391', TO_DATE('11/30/1973', 'MM/DD/YYYY'), '492830981', 'Amount Owing')
-    INTO Customer (CustomerId, CustomerInitials, FirstName, LastName, PhoneNumber, Birthdate, DriverLicenseNumber, Status) VALUES (4, 'MA', 'Margeret', 'Armstrong', '(905) 745-7342', TO_DATE('06/19/1968', 'MM/DD/YYYY'), '987654336', 'Suspended')
-    INTO Customer (CustomerId, CustomerInitials, FirstName, LastName, PhoneNumber, Birthdate, DriverLicenseNumber, Status) VALUES (5, 'MM', 'Michael', 'McGuinty', '(905) 648-3246', TO_DATE('03/30/1984', 'MM/DD/YYYY'), '345678998', 'Active')
-    INTO Customer (CustomerId, CustomerInitials, FirstName, LastName, PhoneNumber, Birthdate, DriverLicenseNumber, Status) VALUES (6, 'PC', 'Phil', 'Charest', '(416) 371-3979', TO_DATE('12/10/1980', 'MM/DD/YYYY'), '604604047', 'Suspended')
-    INTO Customer (CustomerId, CustomerInitials, FirstName, LastName, PhoneNumber, Birthdate, DriverLicenseNumber, Status) VALUES (7, 'PC', 'Paula', 'Chow', '(416) 635-5555', TO_DATE('12/10/1979', 'MM/DD/YYYY'), '000123000', 'Inactive')
-SELECT * FROM dual;
-
-INSERT ALL
-    INTO Dvd (DvdId, DvdTitle, DvdYear, DvdCost, CategoryId, Rating, RentedOut, ActionOnReturn) VALUES (1, 'Elizabeth: The Golden Age', TO_DATE('2018', 'YYYY'), 5.29, 5, 'PG', 'Y', 'Return to Shelf')
-    INTO Dvd (DvdId, DvdTitle, DvdYear, DvdCost, CategoryId, Rating, RentedOut, ActionOnReturn) VALUES (2, 'The Bourne Ultimatum', TO_DATE('2006', 'YYYY'), 3.99, 1, 'PG', 'N', 'Sell')
-    INTO Dvd (DvdId, DvdTitle, DvdYear, DvdCost, CategoryId, Rating, RentedOut, ActionOnReturn) VALUES (3, 'Shrek 2', TO_DATE('2004', 'YYYY'), 3.99, 3, '3', 'N', 'Return to Shelf')
-    INTO Dvd (DvdId, DvdTitle, DvdYear, DvdCost, CategoryId, Rating, RentedOut, ActionOnReturn) VALUES (4, 'Ace Ventura, Pet Detective', TO_DATE('2004', 'YYYY'), 3.99, 4, '14A', 'N', 'Sell')
-    INTO Dvd (DvdId, DvdTitle, DvdYear, DvdCost, CategoryId, Rating, RentedOut, ActionOnReturn) VALUES (5, 'Hairspray', TO_DATE('2017', 'YYYY'), 5.29, 7, 'PG', 'N', 'Sell')
-    INTO Dvd (DvdId, DvdTitle, DvdYear, DvdCost, CategoryId, Rating, RentedOut, ActionOnReturn) VALUES (6, 'A Charlie Brown Christmas', TO_DATE('2000', 'YYYY'), 3.99, 3, 'G', 'N', 'Return to Shelf')
-    INTO Dvd (DvdId, DvdTitle, DvdYear, DvdCost, CategoryId, Rating, RentedOut, ActionOnReturn) VALUES (7, 'Leonard Cohen: I''m Your Man', TO_DATE('2022', 'YYYY'), 3.99, 2, 'PG', 'Y', 'Return to Shelf')
-    INTO Dvd (DvdId, DvdTitle, DvdYear, DvdCost, CategoryId, Rating, RentedOut, ActionOnReturn) VALUES (8, 'Nightmare on Elm Street', TO_DATE('1999', 'YYYY'), 3.99, 6, 'R', 'Y', 'Return to Shelf')
-    INTO Dvd (DvdId, DvdTitle, DvdYear, DvdCost, CategoryId, Rating, RentedOut, ActionOnReturn) VALUES (9, 'Star Trek: Nemesis', TO_DATE('2005', 'YYYY'), 3.99, 8, 'PG', 'Y', 'Return to Shelf')
-    INTO Dvd (DvdId, DvdTitle, DvdYear, DvdCost, CategoryId, Rating, RentedOut, ActionOnReturn) VALUES (10, 'The King''s Speech', TO_DATE('2020', 'YYYY'), 5.29, 5, 'R', 'Y', 'Return to Shelf')
-    INTO Dvd (DvdId, DvdTitle, DvdYear, DvdCost, CategoryId, Rating, RentedOut, ActionOnReturn) VALUES (11, 'True Grit', TO_DATE('2020', 'YYYY'), 5.29, 1, 'PG', 'Y', 'Return to Shelf')
-SELECT * FROM dual;
-
-INSERT ALL
-    INTO Rental (RentalID, RentalDate, CustomerId, DvdId) VALUES (1001, TO_DATE('12/02/2011', 'MM/DD/YYYY'), 2, 10)
-    INTO Rental (RentalID, RentalDate, CustomerId, DvdId) VALUES (1002, TO_DATE('12/02/2011', 'MM/DD/YYYY'), 2, 3)
-    INTO Rental (RentalID, RentalDate, CustomerId, DvdId) VALUES (1003, TO_DATE('12/02/2011', 'MM/DD/YYYY'), 5, 6)
-    INTO Rental (RentalID, RentalDate, CustomerId, DvdId) VALUES (1004, TO_DATE('12/07/2011', 'MM/DD/YYYY'), 6, 1)
-    INTO Rental (RentalID, RentalDate, CustomerId, DvdId) VALUES (1005, TO_DATE('12/07/2011', 'MM/DD/YYYY'), 3, 7)
-    INTO Rental (RentalID, RentalDate, CustomerId, DvdId) VALUES (1006, TO_DATE('12/07/2011', 'MM/DD/YYYY'), 3, 9)
-SELECT * FROM dual;
-
-
-
--- This bottom part can be commented in and will work immediately
+---- Test Talend imports
+--SELECT * FROM DvdRating;
+--SELECT * FROM CustomerStatus;
+--SELECT * FROM DvdActionOnReturn;
 --
----- Just in case, quick drop table
----- Drop the tables in reverse order of creation to avoid foreign key constraint issues
+--SELECT * FROM Category;
+--SELECT * FROM Customer;
+--SELECT * FROM Dvd;
+--SELECT * FROM Rental;
+
+-- Pass perms to S16_ESGUERCA and S16_NGUYE617
+BEGIN
+  FOR t IN (SELECT table_name FROM user_tables) LOOP
+    EXECUTE IMMEDIATE 'GRANT SELECT ON ' || t.table_name || ' TO S16_ESGUERCA';
+    EXECUTE IMMEDIATE 'GRANT SELECT ON ' || t.table_name || ' TO S16_NGUYE617';
+  END LOOP;
+END;
+
+
+----------------
+---- PART B ----
+-- Insert data
+CREATE OR REPLACE PROCEDURE InsertCustomer (
+    p_CustomerId IN Customer.CustomerId%TYPE,
+    p_CustomerInitials IN Customer.CustomerInitials%TYPE,
+    p_FirstName IN Customer.FirstName%TYPE,
+    p_LastName IN Customer.LastName%TYPE,
+    p_PhoneNumber IN Customer.PhoneNumber%TYPE,
+    p_Birthdate IN Customer.Birthdate%TYPE,
+    p_DriverLicenseNumber IN Customer.DriverLicenseNumber%TYPE,
+    p_Status IN Customer.Status%TYPE
+) AS
+BEGIN
+    INSERT INTO Customer (CustomerId, CustomerInitials, FirstName, LastName, PhoneNumber, Birthdate, DriverLicenseNumber, Status)
+    VALUES (p_CustomerId, p_CustomerInitials, p_FirstName, p_LastName, p_PhoneNumber, p_Birthdate, p_DriverLicenseNumber, p_Status);
+    COMMIT;
+END;
+/
+
+--Update data
+CREATE OR REPLACE PROCEDURE UpdateCustomer (
+    p_CustomerId IN Customer.CustomerId%TYPE,
+    p_PhoneNumber IN Customer.PhoneNumber%TYPE,
+    p_Status IN Customer.Status%TYPE
+) AS
+BEGIN
+    UPDATE Customer
+    SET PhoneNumber = p_PhoneNumber,
+        Status = p_Status
+    WHERE CustomerId = p_CustomerId;
+    COMMIT;
+END;
+/
+
+-- Delete data
+CREATE OR REPLACE PROCEDURE DeleteCustomer (
+    p_CustomerId IN Customer.CustomerId%TYPE
+) AS
+BEGIN
+    DELETE FROM Customer
+    WHERE CustomerId = p_CustomerId;
+    COMMIT;
+END;
+/
+
+---
+--Task a: Show the customer name and DVD name along with rental cost in a list starting 
+--from the least renting cost to the highest renting cost using analytical functions.
+SELECT 
+    c.FirstName || ' ' || c.LastName AS CustomerName,
+    d.DvdTitle,
+    d.DvdCost,
+    RANK() OVER (ORDER BY d.DvdCost ASC) AS CostRank
+FROM 
+    Rental r
+JOIN 
+    Customer c ON r.CustomerId = c.CustomerId
+JOIN 
+    Dvd d ON r.DvdId = d.DvdId
+ORDER BY 
+    d.DvdCost ASC;
+    
+----------------
+-- Task b: Show the titles and cost of DVDs with the third and
+-- fourth highest price using Analytical Functions.
+SELECT 
+    DvdTitle,
+    DvdCost
+FROM(
+    SELECT 
+        DvdTitle,
+        DvdCost,
+        ROW_NUMBER() OVER (ORDER BY DvdCost DESC) AS PriceRank
+    FROM 
+        Dvd
+)
+WHERE 
+    PriceRank IN (3, 4);
+---
+
+--Task 1: Show the names of the customers, movie name, and the number of 
+--movies rented by them. Make sure to show subtotals as per customer 
+--(number of movies rented) and subtotal for each movie showing how many times that movie was rented.
+CREATE OR REPLACE PROCEDURE ShowCustomerMovieRentals AS
+BEGIN
+    -- Show the names of the customers, movie name, and the number of movies rented by them
+    DBMS_OUTPUT.PUT_LINE('Customer Name | Movie Name | Number of Rentals');
+    FOR rec IN (
+        SELECT 
+            c.FirstName || ' ' || c.LastName AS CustomerName,
+            d.DvdTitle,
+            COUNT(r.RentalID) AS NumberOfRentals
+        FROM 
+            Rental r
+        JOIN 
+            Customer c ON r.CustomerId = c.CustomerId
+        JOIN 
+            Dvd d ON r.DvdId = d.DvdId
+        GROUP BY 
+            c.FirstName || ' ' || c.LastName, d.DvdTitle
+        ORDER BY 
+            c.FirstName || ' ' || c.LastName, d.DvdTitle
+    ) LOOP
+        DBMS_OUTPUT.PUT_LINE(rec.CustomerName || ' | ' || rec.DvdTitle || ' | ' || rec.NumberOfRentals);
+    END LOOP;
+
+    -- Show subtotals per customer
+    DBMS_OUTPUT.PUT_LINE('Customer Name | Total Rentals');
+    FOR rec IN (
+        SELECT 
+            c.FirstName || ' ' || c.LastName AS CustomerName,
+            COUNT(r.RentalID) AS TotalRentals
+        FROM 
+            Rental r
+        JOIN 
+            Customer c ON r.CustomerId = c.CustomerId
+        GROUP BY 
+            c.FirstName || ' ' || c.LastName
+        ORDER BY 
+            c.FirstName || ' ' || c.LastName
+    ) LOOP
+        DBMS_OUTPUT.PUT_LINE(rec.CustomerName || ' | ' || rec.TotalRentals);
+    END LOOP;
+
+    -- Show subtotals per movie
+    DBMS_OUTPUT.PUT_LINE('Movie Name | Total Rentals');
+    FOR rec IN (
+        SELECT 
+            d.DvdTitle,
+            COUNT(r.RentalID) AS TotalRentals
+        FROM 
+            Rental r
+        JOIN 
+            Dvd d ON r.DvdId = d.DvdId
+        GROUP BY 
+            d.DvdTitle
+        ORDER BY 
+            d.DvdTitle
+    ) LOOP
+        DBMS_OUTPUT.PUT_LINE(rec.DvdTitle || ' | ' || rec.TotalRentals);
+    END LOOP;
+END;
+/
+---
+
+----Task 2: What is the difference between DVD cost and the average cost of all the DVDs of each year.
+CREATE OR REPLACE FUNCTION DvdCostDifference
+RETURN SYS_REFCURSOR AS
+    dvd_cursor SYS_REFCURSOR;
+BEGIN
+    OPEN dvd_cursor FOR
+        SELECT 
+            DvdTitle,
+            DvdCost,
+            DvdYear,
+            DvdCost - AVG(DvdCost) OVER (PARTITION BY DvdYear) AS CostDifference
+        FROM 
+            Dvd;
+    RETURN dvd_cursor;
+END;
+/
+----
+
+ testing the show customer movie rentals procedure:
+BEGIN
+    ShowCustomerMovieRentals;
+END;
+
+
+
+ testing the dvd cost difference function:
+SET SERVEROUTPUT ON;
+DECLARE
+    dvd_rec SYS_REFCURSOR;
+    dvd_title Dvd.DvdTitle%TYPE;
+    dvd_cost Dvd.DvdCost%TYPE;
+    dvd_year Dvd.DvdYear%TYPE;
+    cost_difference NUMBER;
+BEGIN
+    dvd_rec := DvdCostDifference;
+    LOOP
+        FETCH dvd_rec INTO dvd_title, dvd_cost, dvd_year, cost_difference;
+        EXIT WHEN dvd_rec%NOTFOUND;
+        DBMS_OUTPUT.PUT_LINE('Title: ' || dvd_title || ', Year: ' || dvd_year || ', Cost: ' || dvd_cost || ', Difference: ' || cost_difference);
+    END LOOP;
+    CLOSE dvd_rec;
+END;
+
+
+--testing for the insert:
+DECLARE
+    v_CustomerId Customer.CustomerId%TYPE := &CustomerId;
+    v_CustomerInitials Customer.CustomerInitials%TYPE := '&CustomerInitials';
+    v_FirstName Customer.FirstName%TYPE := '&FirstName';
+    v_LastName Customer.LastName%TYPE := '&LastName';
+    v_PhoneNumber Customer.PhoneNumber%TYPE := '&PhoneNumber';
+    v_Birthdate Customer.Birthdate%TYPE := TO_DATE('&Birthdate', 'MM/DD/YYYY');
+    v_DriverLicenseNumber Customer.DriverLicenseNumber%TYPE := '&DriverLicenseNumber';
+    v_Status Customer.Status%TYPE := '&Status';
+BEGIN
+    InsertCustomer(v_CustomerId, v_CustomerInitials, v_FirstName, v_LastName, v_PhoneNumber, v_Birthdate, v_DriverLicenseNumber, v_Status);
+END;
+/
+SELECT * FROM Customer;
+--
+
+
+-- testing for the update:
+DECLARE
+    v_CustomerId Customer.CustomerId%TYPE := &CustomerId;
+    v_PhoneNumber Customer.PhoneNumber%TYPE := '&PhoneNumber';
+    v_Status Customer.Status%TYPE := '&Status';
+BEGIN
+    UpdateCustomer(v_CustomerId, v_PhoneNumber, v_Status);
+END;
+/
+SELECT * FROM Customer;
+
+-- testing for the delete:
+DECLARE
+    v_CustomerId Customer.CustomerId%TYPE := &CustomerId;
+BEGIN
+    DeleteCustomer(v_CustomerId);
+END;
+/
+SELECT * FROM Customer;
+
+
+----------------
+---- PART C ----
+
+
+
+------------------------------
+---- ONLY FOR EMERGENCIES ----
+---- This bottom part can be commented in and will work immediately
+----
+---- In case of emergency reset, quick drop table
+---- Drop the tables in reverse order of creation to avoid constraint issues
 --DROP TABLE Rental;
 --DROP TABLE Customer;
 --DROP TABLE Dvd;

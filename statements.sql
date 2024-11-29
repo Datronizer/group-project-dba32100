@@ -14,6 +14,7 @@ BEGIN
     VALUES (p_CustomerId, p_CustomerInitials, p_FirstName, p_LastName, p_PhoneNumber, p_Birthdate, p_DriverLicenseNumber, p_Status);
     COMMIT;
 END;
+/
 --Update data
 CREATE OR REPLACE PROCEDURE UpdateCustomer (
     p_CustomerId IN Customer.CustomerId%TYPE,
@@ -100,6 +101,7 @@ BEGIN
         DBMS_OUTPUT.PUT_LINE(rec.CustomerName || ' | ' || rec.DvdTitle || ' | ' || rec.NumberOfRentals);
     END LOOP;
 END;
+/
 
 -- part two showing the subtotal:
 CREATE OR REPLACE PROCEDURE ShowSubtotals AS
@@ -140,6 +142,7 @@ BEGIN
         DBMS_OUTPUT.PUT_LINE(rec.DvdTitle || ' | ' || rec.TotalRentals);
     END LOOP;
 END;
+/
 
 ----Task 2: What is the difference between DVD cost and the average cost of all the DVDs of each year.
 CREATE OR REPLACE FUNCTION DvdCostDifference
@@ -151,11 +154,12 @@ BEGIN
             DvdTitle,
             DvdCost,
             DvdYear,
-            DvdCost - AVG(DvdCost) OVER (PARTITION BY EXTRACT(YEAR FROM DvdYear)) AS CostDifference
+            DvdCost - AVG(DvdCost) OVER (PARTITION BY DvdYear) AS CostDifference
         FROM 
             Dvd;
     RETURN dvd_cursor;
 END;
+/
 ----
 
 -- testing the show customer movie rentals and subtotal procedures:
