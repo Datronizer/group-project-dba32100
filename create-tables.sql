@@ -329,8 +329,142 @@ SELECT * FROM Customer;
 
 ----------------
 ---- PART C ----
+-- Create the Year table
+-- Create Rating Table
+CREATE TABLE PartCDvdRating (
+    Rating VARCHAR2(5) PRIMARY KEY  --('PG', 'G', 'R', '14A', '3')
+);
+/
+-- Create ActionOnReturn Table
+CREATE TABLE PartCDvdActionOnReturn (
+    ActionOnReturnEnum VARCHAR2(20) PRIMARY KEY
+);
+/
+-- Create Category Table with Surrogate Key
+CREATE TABLE PartCCategory (
+    CategoryId INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    CategoryName VARCHAR2(50) NOT NULL
+);
+/
+-- Create Customer Table with Surrogate Key
+CREATE TABLE PartCCustomer (
+    CustomerId INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    CustomerInitials VARCHAR2(2) NOT NULL,
+    FirstName VARCHAR2(50) NOT NULL,
+    LastName VARCHAR2(50) NOT NULL,
+    PhoneNumber VARCHAR2(20) NOT NULL,
+    Birthdate DATE NOT NULL,
+    DriverLicenseNumber VARCHAR2(20) NOT NULL,
+    Status VARCHAR2(20) NOT NULL
+);
+/
+-- Create Year Table with Surrogate Key
+CREATE TABLE PartCYear (
+    YearId INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Year INT NOT NULL
+);
+/
+-- Create Rental Table
+CREATE TABLE PartCRental (
+    RentalID NUMBER(4) PRIMARY KEY,
+    RentalDate DATE NOT NULL,
+    CustomerId INT,
+    DvdId INT,
+    
+    FOREIGN KEY (CustomerId) REFERENCES PartCCustomer(CustomerId),
+    FOREIGN KEY (DvdId) REFERENCES Dvd(DvdId)
+);
+/
+-- Now we populate them
+-- Populate PartCCategory Table
+INSERT INTO PartCCategory (CategoryName)
+SELECT DISTINCT cat.CatergoryName
+FROM Dvd d
+JOIN Category cat ON d.CategoryId = cat.CategoryId;
+/
+-- Populate PartCCustomer Table
+INSERT INTO PartCCustomer (CustomerInitials, FirstName, LastName, PhoneNumber, Birthdate, DriverLicenseNumber, Status)
+SELECT DISTINCT c.CustomerInitials, c.FirstName, c.LastName, c.PhoneNumber, c.Birthdate, c.DriverLicenseNumber, c.Status
+FROM Dvd d
+JOIN Rental r ON d.DvdId = r.DvdId
+JOIN Customer c ON r.CustomerId = c.CustomerId;
+/
+-- Populate PartCYear Table
+INSERT INTO PartCYear (Year)
+SELECT DISTINCT DvdYear FROM Dvd;
+/
+-- Populate PartCDvdRating Table
+INSERT INTO PartCDvdRating (Rating)
+SELECT DISTINCT Rating FROM Dvd;
+/
+-- Populate PartCDvdActionOnReturn Table
+INSERT INTO PartCDvdActionOnReturn (ActionOnReturnEnum)
+SELECT DISTINCT ActionOnReturn FROM Dvd;
 
+DECLARE
+    v_DvdId Dvd.DvdId%TYPE;
+    v_RentalDate Rental.RentalDate%TYPE;
+    v_CustomerId Rental.CustomerId%TYPE;
+    v_CategoryId Dvd.CategoryId%TYPE;
+    v_DvdYear Dvd.DvdYear%TYPE;
+    v_CustomerKey INT;
+    v_CategoryKey INT;
+    v_YearKey INT;
+    CURSOR dvd_cursor IS
+        SELECT d.DvdId, r.RentalDate, r.CustomerId, d.CategoryId, d.DvdYear
+        FROM Dvd d
+        JOIN Rental r ON d.DvdId = r.DvdId;
+BEGIN
+    OPEN dvd_cursor;
+    LOOP
+        FETCH dvd_cursor INTO v_DvdId, v_RentalDate, v_CustomerId, v_CategoryId, v_DvdYear;
+        EXIT WHEN dvd_cursor%NOTFOUND;
 
+        -- Debugging output
+        DBMS_OUTPUT.PUT_LINE('DvdId: ' || v_DvdId || ', RentalDate: ' || v_RentalDate || ', CustomerId: ' || v_CustomerId || ', CategoryId: ' || v_CategoryId || ', DvdYear: ' || v_DvdYear);
+
+        -- Get surrogate keys
+        BEGIN
+            SELECT CustomerId INTO v_CustomerKey 
+            FROM PartCCustomer 
+            WHERE CustomerId = v_CustomerId AND ROWNUM = 1;
+        EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+                v_CustomerKey := NULL;
+            WHEN TOO_MANY_ROWS THEN
+                v_CustomerKey := NULL;
+        END;
+
+        BEGIN
+            SELECT CategoryId INTO v_CategoryKey 
+            FROM PartCCategory 
+            WHERE CategoryId = v_CategoryId AND ROWNUM = 1;
+        EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+                v_CategoryKey := NULL;
+            WHEN TOO_MANY_ROWS THEN
+                v_CategoryKey := NULL;
+        END;
+
+        BEGIN
+            SELECT YearId INTO v_YearKey 
+            FROM PartCYear 
+            WHERE Year = v_DvdYear AND ROWNUM = 1;
+        EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+                v_YearKey := NULL;
+            WHEN TOO_MANY_ROWS THEN
+                v_YearKey := NULL;
+        END;
+
+        -- Insert into fact table
+        INSERT INTO PartCRental (RentalID, RentalDate, CustomerId, DvdId)
+        VALUES (v_DvdId, v_RentalDate, v_CustomerKey, v_DvdId);
+    END LOOP;
+    CLOSE dvd_cursor;
+END;
+/
+SELECT * FROM PartCRental;
 
 ------------------------------
 ---- ONLY FOR EMERGENCIES ----
@@ -338,6 +472,13 @@ SELECT * FROM Customer;
 ----
 ---- In case of emergency reset, quick drop table
 ---- Drop the tables in reverse order of creation to avoid constraint issues
+DROP TABLE PartCDvdActionOnReturn;
+DROP TABLE PartCCategory;
+DROP TABLE PartCDvdRating;
+DROP TABLE PartCYear;
+DROP TABLE PartCRental;
+DROP TABLE PartCCustomer;
+
 --DROP TABLE Rental;
 --DROP TABLE Customer;
 --DROP TABLE Dvd;
